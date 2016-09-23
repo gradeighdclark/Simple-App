@@ -7,6 +7,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class MainActivity extends AppCompatActivity {
@@ -14,6 +15,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText edittext;
     private Button searchButton;
     private TextView definitionText;
+    private HashMap<String,String> dictionaryList = new HashMap<>();
 
 
     @Override
@@ -25,29 +27,31 @@ public class MainActivity extends AppCompatActivity {
         searchButton = (Button) findViewById(R.id.searchButton);
         definitionText = (TextView) findViewById(R.id.definitionText);
 
+        addAllDefinitions();
+
     }
 
     public void searchButtonClick(View view) {
         String word = edittext.getText().toString();
+        if(dictionaryList.containsKey(word.toLowerCase().trim())){
+            String definition = dictionaryList.get(word.toLowerCase().trim());
+            definitionText.setText(definition);
+        }else{
+            definitionText.setText("Word not found!");
+        }
 
-        String definition = searchDictionary(word);
-
-        definitionText.setText(definition);
     }
 
-    public String searchDictionary(String word){
+    public void addAllDefinitions(){
         Scanner scan = new Scanner(getResources().openRawResource(R.raw.grewords));
 
         while(scan.hasNextLine()){
             String line = scan.nextLine();
             String[] pieces = line.split("\t");
-            if(pieces[0].equalsIgnoreCase(word.trim())){
-                return pieces[1];
+            dictionaryList.put(pieces[0],pieces[1]);
 
-            }
         }
 
 
-        return "No word found!";
     }
 }
